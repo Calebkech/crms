@@ -1,3 +1,5 @@
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -15,6 +17,13 @@ mail = Mail()
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
+
+    # Configure logging
+    handler = RotatingFileHandler('app.log', maxBytes=100000, backupCount=3)
+    handler.setLevel(logging.ERROR)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
 
     # Initialize extensions
     db.init_app(app)

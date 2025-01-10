@@ -1,6 +1,6 @@
 print("Routes module loaded")  # Debugging log
 
-from flask import Blueprint, request, jsonify, url_for
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import (
     create_access_token, 
     create_refresh_token, 
@@ -22,11 +22,9 @@ mail = Mail()
 @auth_bp.route('/register', methods=['POST'])
 def register():
 
-    print("Register endpoint hit")  # Debugging log
+    current_app.logger.debug("Register endpoint hit")
 
     data = request.get_json()
-
-    print(f"Received data: {data}")  # Log received data
 
     username = data.get('username')
     email = data.get('email')
@@ -36,12 +34,10 @@ def register():
     if not username or not email or not password:
         return jsonify({"msg": "Username, email, and password are required"}), 400
 
-    if User.query.filter_by(username=username).first():
-        return jsonify({"msg": "Username already exists"}), 400
-    if User.query.filter_by(email=email).first():
-        return jsonify({"msg": "Email already exists"}), 400
+    if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
+        return jsonify({"msg": "Username or email already exists"}), 400
     
-        # Check password strength
+    # Check password strength
     is_valid, message = is_strong_password(password)
     if not is_valid:
         return jsonify({"msg": message}), 400
@@ -49,8 +45,13 @@ def register():
     new_user = User(username=username, email=email, role=role)
     new_user.set_password(password)
 
-    db.session.add(new_user)
-    db.session.commit()
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Database error during registration: {e}")
+        return jsonify({"msg": "An error occurred during registration"}), 500
 
     return jsonify({"msg": "User registered successfully"}), 201
 
