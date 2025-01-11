@@ -7,10 +7,9 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_cors import CORS
 from auth.routes import auth_bp
-
+from cash_flow.routes import transaction_bp
 # Import models
-from auth.models import db  # Import the initialized db instance from auth
-from auth.models import User, TokenBlocklist, ResetToken
+from auth.models import db, User, TokenBlocklist, ResetToken # Import the initialized db instance from auth
 
 mail = Mail()
 
@@ -37,6 +36,7 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(transaction_bp, url_prefix='/transaction')
 
     @jwt.token_in_blocklist_loader
     def check_if_token_revoked(jwt_header, jwt_payload):
