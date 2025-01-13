@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app
-from .transaction_model import Transaction
-from auth.models import db
+from .models.transaction_model import Transaction
+from extensions import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 # Define a Blueprint for transaction routes

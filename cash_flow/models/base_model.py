@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import uuid
-from auth.models import db
+from extensions import db
 
 class BaseModel(db.Model):
     __abstract__ = True  # This class is meant to be inherited by other models, not instantiated directly
