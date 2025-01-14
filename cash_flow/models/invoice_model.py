@@ -17,7 +17,7 @@ class Invoice(BaseModel):
     due_date = db.Column(Date, nullable=False)  # Due date for the invoice
 
     customer = db.relationship('Customer', backref=db.backref('invoices', lazy=True))  # Relationship to Customer
-    payments = db.relationship('Payment', backref='invoice', lazy=True)  # Relationship to Payments
+    payments = db.relationship('Payment', back_populates='invoice')  # Define the inverse relationship
 
     def calculate_balance_due(self):
         """Calculate the outstanding balance for the invoice."""

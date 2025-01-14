@@ -17,7 +17,7 @@ class Payment(BaseModel):
     payment_method = db.Column(Enum(PaymentMethod), nullable=False)  # Payment method
     account_id = db.Column(String(36), db.ForeignKey('accounts.id'), nullable=True)  # Reference to an account (optional)
 
-    invoice = db.relationship('Invoice', backref=db.backref('payments', lazy=True))  # Relationship to Invoice
+    invoice = db.relationship('Invoice', back_populates='payments')  # Relationship to Invoice
     account = db.relationship('Account', backref=db.backref('payments', lazy=True))  # Relationship to Account
 
     def to_dict(self):

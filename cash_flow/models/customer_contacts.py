@@ -10,7 +10,7 @@ class CustomerContact(BaseModel):
     contact_type = db.Column(String(50), nullable=False)  # e.g., 'email', 'phone'
     contact_value = db.Column(String(255), nullable=False)  # e.g., 'example@domain.com', '123-456-7890'
 
-    customer = db.relationship('Customers', backref=db.backref('contacts', lazy=True))
+    customer = db.relationship('Customer', backref=db.backref('contacts', lazy=True))
 
     def to_dict(self):
         obj_dict = super().to_dict()
