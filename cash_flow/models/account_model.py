@@ -13,7 +13,7 @@ class Account(BaseModel):
     def to_dict(self):
         obj_dict = super().to_dict()
         obj_dict.update({
-            'name': self.amount,
+            'name': self.name,
             'description': self.description,
             'balance': self.balance,
             'account_type': self.account_type
