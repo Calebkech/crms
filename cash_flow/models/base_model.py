@@ -9,6 +9,7 @@ class BaseModel(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    deleted_at = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,6 +43,16 @@ class BaseModel(db.Model):
         """Delete the object from the database."""
         session.delete(self)
         session.commit()
+
+    def soft_delete(self, session):
+        """Soft delete the object by setting deleted_at timestamp."""
+        self.deleted_at = datetime.utcnow()
+        session.commit()
+
+    @classmethod
+    def active_query(cls):
+        """Return a query filtering out soft-deleted rows."""
+        return cls.query.filter(cls.deleted_at.is_(None))
 
     def __str__(self):
         return f"[{self.__class__.__name__}] ({self.id}) {self.to_dict()}"

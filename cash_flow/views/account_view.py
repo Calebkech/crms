@@ -53,10 +53,11 @@ def create_account():
 @account_bp.route('/accounts', methods=['GET'])
 def get_all_accounts():
     """
-    Fetch and return all accounts in the database.
+    Fetch and return all accounts in the database, excluding soft-deleted ones.
     """
     try:
-        accounts = Account.query.all()  # Retrieve all accounts from the database
+        # Filter accounts where deleted_at is None
+        accounts = Account.query.filter(Account.deleted_at.is_(None)).all()
         accounts_list = [account.to_dict() for account in accounts]  # Serialize accounts
         return jsonify(accounts_list), 200
     except Exception as e:
@@ -100,7 +101,52 @@ def update_account(account_id):
             "details": str(e)
         }), 500
 
-@account_bp.route('/accounts/<string:account_id>', methods=['DELETE'])
+@account_bp.route('/accounts/<string:account_id>/soft_delete', methods=['DELETE'])
+def soft_delete_account(account_id):
+    """
+    Soft delete an account by its UUID.
+    """
+    try:
+        # Fetch the account using active_query
+        account = Account.active_query().filter_by(id=account_id).first()
+        if not account:
+            return jsonify({"error": "Account not found"}), 404
+
+        # Soft delete the account
+        account.soft_delete(db.session)
+        return jsonify({"message": "Account soft-deleted successfully"}), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": "An unexpected error occurred",
+            "details": str(e)
+        }), 500
+
+@account_bp.route('/accounts/<string:account_id>/restore', methods=['POST'])
+def restore_account(account_id):
+    """
+    Restore a soft-deleted account by its UUID.
+    """
+    try:
+        # Fetch the soft-deleted account
+        account = Account.query.filter(Account.id == account_id, Account.deleted_at.isnot(None)).first()
+        
+        if not account:
+            return jsonify({"error": "Account not found or not deleted"}), 404
+
+        # Restore the account
+        account.deleted_at = None  # Clear the deleted_at timestamp
+        db.session.commit()
+
+        return jsonify({"message": "Account restored successfully"}), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": "An unexpected error occurred",
+            "details": str(e)
+        }), 500
+
+@account_bp.route('/accounts/<string:account_id>/hard_delete', methods=['DELETE'])
 def delete_account(account_id):
     """
     Delete an account by its UUID.
