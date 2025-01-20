@@ -4,10 +4,9 @@ from cash_flow.models.account_model import Account
 from extensions import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import uuid
+from .blueprint import cash_flow
 
-account_bp = Blueprint('account', __name__)
-
-@account_bp.route('/create_account', methods=['POST'])
+@cash_flow.route('/create_account', methods=['POST'])
 #@jwt_required()
 def create_account():
     try:
@@ -50,7 +49,7 @@ def create_account():
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
 
-@account_bp.route('/accounts', methods=['GET'])
+@cash_flow.route('/accounts', methods=['GET'])
 def get_all_accounts():
     """
     Fetch and return all accounts in the database, excluding soft-deleted ones.
@@ -66,7 +65,7 @@ def get_all_accounts():
             "details": str(e)
         }), 500
 
-@account_bp.route('/accounts/<string:account_id>', methods=['PUT'])
+@cash_flow.route('/accounts/<string:account_id>', methods=['PUT'])
 def update_account(account_id):
     """
     Update an account's details by its ID.
@@ -101,7 +100,7 @@ def update_account(account_id):
             "details": str(e)
         }), 500
 
-@account_bp.route('/accounts/<string:account_id>/soft_delete', methods=['DELETE'])
+@cash_flow.route('/accounts/<string:account_id>/soft_delete', methods=['DELETE'])
 def soft_delete_account(account_id):
     """
     Soft delete an account by its UUID.
@@ -122,7 +121,7 @@ def soft_delete_account(account_id):
             "details": str(e)
         }), 500
 
-@account_bp.route('/accounts/<string:account_id>/restore', methods=['POST'])
+@cash_flow.route('/accounts/<string:account_id>/restore', methods=['POST'])
 def restore_account(account_id):
     """
     Restore a soft-deleted account by its UUID.
@@ -146,7 +145,7 @@ def restore_account(account_id):
             "details": str(e)
         }), 500
 
-@account_bp.route('/accounts/<string:account_id>/hard_delete', methods=['DELETE'])
+@cash_flow.route('/accounts/<string:account_id>/hard_delete', methods=['DELETE'])
 def delete_account(account_id):
     """
     Delete an account by its UUID.

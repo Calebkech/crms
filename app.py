@@ -11,7 +11,7 @@ from extensions import db
 #import blueprints here
 from auth.routes import auth_bp
 from cash_flow.routes import transaction_bp
-from cash_flow.views import account_bp
+from cash_flow.views.blueprint import cash_flow
 
 # Import models
 from auth.models import User, TokenBlocklist, ResetToken
@@ -44,7 +44,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(transaction_bp, url_prefix='/transaction')
-    app.register_blueprint(account_bp, url_prefix='/accounts')
+    app.register_blueprint(cash_flow, url_prefix='/cash_flow')
 
     @jwt.token_in_blocklist_loader
     def check_if_token_revoked(jwt_header, jwt_payload):
