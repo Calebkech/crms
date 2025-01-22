@@ -114,3 +114,30 @@ def restore_customer(customer_id):
             "error": "An unexpected error occurred",
             "details": str(e)
         }), 500
+
+@cash_flow.route('/cutomer/<string:customer_id>/delete_customer', methods=['DELETE'])
+def delete_customer(customer_id):
+    """
+    Delete customer by its uuid
+    """
+    try:
+        # Validate UUID Formart
+        try:
+            uuid_obj = uuid.UUID(customer_id)
+        except ValueError:
+            return jsonify({"error": "Invalid UUID"}), 400
+        
+        # Fetch the customer from the DB
+        customer = Customer.query.get(customer_id)
+        if not customer:
+            return jsonify({"error": "Customer not found"}), 404
+        
+        # Delete the customer using the basemodel's delete method
+        customer.delete(db.session)
+
+        return jsonify({"Message": "Customer deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({
+            "error": "An unxpected error occurred",
+            "Details": str(e)
+        }), 500
