@@ -74,7 +74,7 @@ def get_all_customers():
 @cash_flow.route('/cutomer/<string:customer_id>/soft_delete', methods=['DELETE'])
 def soft_delete_customer(customer_id):
     """
-    Soft delete a user by its UUID
+    Soft delete customer by its UUID
     """
     try:
         # Fetch the customer using active_querry
@@ -86,6 +86,29 @@ def soft_delete_customer(customer_id):
         customer.soft_delete(db.session)
         return jsonify({"message": "Customer soft-deleted successfully"}), 200
     
+    except Exception as e:
+        return jsonify({
+            "error": "An unexpected error occurred",
+            "details": str(e)
+        }), 500
+    
+@cash_flow.route('/cutomer/<string:customer_id>/restore_customer', methods=['POST'])
+def restore_customer(customer_id):
+    """
+    Restore a soft-delete customer by its UUID
+    """
+    try:
+        # Fetch the soft-deleted cutomer
+        customer = Customer.query.filter(Customer.id == customer_id, Customer.deleted_at.isnot(None)).first()
+
+        if not customer:
+            return jsonify({"error": "Customer not found or not deleted"}), 404
+        
+        # Restore the Customer by clearing the deleted_at timestamp
+        customer.deleted_at = None 
+        db.session.commit()
+        
+        return jsonify({"message": "Customer restored Successfully"}), 200
     except Exception as e:
         return jsonify({
             "error": "An unexpected error occurred",
