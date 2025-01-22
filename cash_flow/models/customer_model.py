@@ -17,7 +17,7 @@ class Customer(BaseModel):
         obj_dict = super().to_dict()  # Get fields from BaseModel
         obj_dict.update({
             'first_name': self.first_name,
-            'las_name': self.last_name,
+            'last_name': self.last_name,
             'email': self.email,
             'phone': self.phone,
             'address': self.address,

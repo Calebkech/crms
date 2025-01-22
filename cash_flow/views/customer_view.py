@@ -54,6 +54,49 @@ def create_customer():
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred', 'detailes': str(e)}), 500
 
+@cash_flow.route('/customer/<string:customer_id>', methods=['POST'])
+def update_customer(customer_id):
+    """
+    Update a customer's details by its ID.
+    """
+    try:
+        # Fetch customer from the DB
+        customer = Customer.query.get(customer_id)
+        if not customer:
+            return jsonify({"error": "Customer not found"}), 404
+
+        # Get the request data
+        data = request.get_json(silent=True)
+        if data is None:
+            return jsonify({"error": "Invalid JSON in request body"}), 400
+
+        # Update customer fields if present in the request
+        if 'first_name' in data:
+            customer.first_name = data['first_name']
+        if 'last_name' in data:
+            customer.last_name = data['last_name']
+        if 'email' in data:
+            customer.email = data['email']
+        if 'phone' in data:
+            customer.phone = data['phone']
+        if 'address' in data:
+            customer.address = data['address']
+
+        # Save the updated customer
+        try:
+            customer.save(db.session)
+        except Exception as db_error:
+            db.session.rollback()
+            return jsonify({"error": "Failed to save customer", "details": str(db_error)}), 500
+
+        return jsonify(customer.to_dict()), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": "An unexpected error occurred",
+            "details": str(e)
+        }), 500
+
 @cash_flow.route('/view_customers', methods = ['GET'])
 def get_all_customers():
     """
@@ -115,7 +158,7 @@ def restore_customer(customer_id):
             "details": str(e)
         }), 500
 
-@cash_flow.route('/cutomer/<string:customer_id>/delete_customer', methods=['DELETE'])
+@cash_flow.route('/cutomer/<string:customer_id>', methods=['DELETE'])
 def delete_customer(customer_id):
     """
     Delete customer by its uuid
