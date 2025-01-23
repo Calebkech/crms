@@ -10,7 +10,9 @@ import uuid
 def create_customer():
     try:
         # Get data from the request
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if data is None:
+            return jsonify({"error": "Invalid JSON in request body"}), 400
 
         # Validate required fields
         required_fields = ['first_name', 'last_name', 'email', 'phone', 'address']
