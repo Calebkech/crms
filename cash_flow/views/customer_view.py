@@ -56,7 +56,7 @@ def create_customer():
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred', 'detailes': str(e)}), 500
 
-@cash_flow.route('/customer/<string:customer_id>', methods=['POST'])
+@cash_flow.route('/customer/<string:customer_id>', methods=['PUT'])
 def update_customer(customer_id):
     """
     Update a customer's details by its ID.

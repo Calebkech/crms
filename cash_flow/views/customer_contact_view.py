@@ -10,3 +10,37 @@ def create_customer_contact():
         pass
     except Exception as e:
         pass
+
+@cash_flow.route('/customer_contact/<string:customer_contact_id>', methods=['GET'])
+def get_customer_contacts(customer_contact_id):
+    try:
+        pass
+    except Exception as e:
+        pass
+
+@cash_flow.route('/cutomer_contact/<string:customer_contact_id>', methods=['PUT'])
+def update_customer_contact(customer_contact_id):
+    try:
+        pass
+    except Exception as e:
+        pass
+
+@cash_flow.route('/customer_contact/<string:customer_contact_id>', methods=['DELETE'])
+def soft_delete_customer_contact(customer_contact_id):
+    try:
+        pass
+    except Exception as e:
+        pass
+
+@cash_flow.route('/customer_contact/<string:customer_contact_id>', methods=['POST'])
+def restore_customer_contact(customer_contact_id):
+    try:
+        pass
+    except Exception as e:
+        pass
+@cash_flow.route('/customer_contact/<string:customer_contact_id>', methods=['DELETE'])
+def delete_customer_contact(customer_contact_id):
+    try:
+        pass
+    except Exception as e:
+        pass
