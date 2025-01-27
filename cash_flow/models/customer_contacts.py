@@ -5,7 +5,6 @@ from extensions import db
 class CustomerContact(BaseModel):
     __tablename__ = 'customer_contacts'
 
-    id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.String(36), db.ForeignKey('customers.id'), nullable=False)
     contact_type = db.Column(String(50), nullable=False)  # e.g., 'email', 'phone'
     contact_value = db.Column(String(255), nullable=False)  # e.g., 'example@domain.com', '123-456-7890'
