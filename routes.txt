@@ -29,7 +29,7 @@ cashflow.soft_delete_account           DELETE   /cash_flow/accounts/<string:acco
 cashflow.soft_delete_customer          DELETE   /cash_flow/cutomer/<string:customer_id>/soft_delete     
 cashflow.soft_delete_customer_contact  DELETE   /cash_flow/customer_contact/<string:customer_contact_id>
 cashflow.update_account                PUT      /cash_flow/accounts/<string:account_id>                 
-cashflow.update_customer               POST     /cash_flow/customer/<string:customer_id>                
+cashflow.update_customer               PUT      /cash_flow/customer/<string:customer_id>                
 cashflow.update_customer_contact       PUT      /cash_flow/cutomer_contact/<string:customer_contact_id> 
 static                                 GET      /static/<path:filename>                                 
 transactions.create_transaction        POST     /transaction/create_new                                 

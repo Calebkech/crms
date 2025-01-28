@@ -52,10 +52,38 @@ def get_customer_contacts(customer_contact_id):
 
 @cash_flow.route('/cutomer_contact/<string:customer_contact_id>', methods=['PUT'])
 def update_customer_contact(customer_contact_id):
+    """
+    Update customer contact details by ID
+    """
     try:
-        pass
+        # Fetch customer contact from Db
+        customer_contact = CustomerContact.query.get(customer_contact_id)
+        if not customer_contact:
+            return jsonify({"Error": "Customer Contact not found"}), 400
+        
+        # Get data form request
+        data = request.get_json(silent=True)
+        if data is None:
+            return jsonify({"Error": "Invalid Json in Request Body"}), 400
+        
+        # Update Contact info if present in the request
+        if 'contact_type' in data:
+            customer_contact.contact_type = data['contact_type']
+        if 'contact_value' in data:
+            customer_contact.contact_value = data['contact_value']
+        
+        # Save Updated Data
+        try:
+            customer_contact.save(db.session)
+        except Exception as db_error:
+            db.session.rollback()
+            return jsonify({"error": "Failed to Update customer Contact", "Details": str(db_error)}), 500
+        return jsonify(customer_contact.to_dict()), 200
     except Exception as e:
-        pass
+        return jsonify({
+            "error": "An unexpected error occurred", 
+            "details": str(e)
+        }), 500
 
 @cash_flow.route('/customer_contact/<string:customer_contact_id>', methods=['DELETE'])
 def soft_delete_customer_contact(customer_contact_id):
