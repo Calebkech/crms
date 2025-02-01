@@ -1,9 +1,10 @@
 # utils.py
 import logging
-from typing import Dict, List, Optional, Type
-from pydantic import BaseModel, EmailStr, ValidationError
+from typing import Dict, List, Optional, Type, Tuple
+from pydantic import BaseModel, EmailStr, ValidationError, Field
 from sqlalchemy.orm import Query
 from sqlalchemy.exc import SQLAlchemyError
+from cash_flow.models import Vendor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,6 +34,17 @@ class VendorUpdateSchema(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
     description: Optional[str] = None
+
+# Pydantic Schema for VendorContact
+class VendorContactCreateSchema(BaseModel):
+    vendor_id: str = Field(..., description="Vendor ID")
+    contact_type: str = Field(..., description="Contact type (e.g., 'email', 'phone')")
+    contact_value: str = Field(..., description="Contact value (e.g., 'example@domain.com', '123-456-7890')")
+
+class VendorContactUpdateSchema(BaseModel):
+    vendor_id: Optional[str] = Field(None, description="Vendor ID")
+    contact_type: Optional[str] = Field(None, description="Contact type (e.g., 'email', 'phone')")
+    contact_value: Optional[str] = Field(None, description="Contact value (e.g., 'example@domain.com', '123-456-7890')")
 
 # Utility Functions
 def validate_required_fields(data: Dict, required_fields: List[str]) -> tuple[bool, Optional[str]]:
@@ -82,6 +94,23 @@ def handle_duplicate_entry(model: Type, email: Optional[str] = None, phone: Opti
             return True, ERROR_MESSAGES['phone_exists']
     return False, None
 
+def handle_duplicate_entry_contact(model: Type, field: str, value: str) -> Tuple[bool, Optional[str]]:
+    """
+    Check if a record with the given field value already exists in the database.
+    
+    Args:
+        model: The SQLAlchemy model to query.
+        field (str): The field to check for duplicates (e.g., 'contact_value').
+        value (str): The value to check for duplicates.
+    
+    Returns:
+        Tuple[bool, Optional[str]]: (True, error_message) if duplicate exists, (False, None) otherwise.
+    """
+    existing_record = model.query.filter(getattr(model, field) == value).first()
+    if existing_record:
+        return True, f"{field.capitalize()} is already registered"
+    return False, None
+
 def validate_with_pydantic(schema: Type[BaseModel], data: Dict) -> tuple[bool, Optional[Dict]]:
     """
     Validate data using a Pydantic schema.
@@ -98,3 +127,22 @@ def validate_with_pydantic(schema: Type[BaseModel], data: Dict) -> tuple[bool, O
         return True, validated_data
     except ValidationError as e:
         return False, e.errors()
+
+def validate_vendor_id(vendor_id: str) -> tuple[bool, Optional[str]]:
+    """
+    Validate if the vendor_id exists in the database.
+    
+    Args:
+        vendor_id (str): The vendor ID to validate.
+    
+    Returns:
+        tuple[bool, Optional[str]]: (True, None) if valid, (False, error_message) if invalid.
+    """
+    if not vendor_id:
+        return False, "Vendor ID is required"
+
+    vendor = Vendor.query.get(vendor_id)
+    if not vendor:
+        return False, "Vendor not found"
+
+    return True, None
