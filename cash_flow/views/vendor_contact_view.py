@@ -50,7 +50,7 @@ def create_vendor_contact():
 
         # Create and save the new vendor contact
         new_contact = VendorContact(**validated_data)
-        new_contact.save(get_db_session())
+        new_contact.save(db.session)
 
         return jsonify({"message": "Vendor contact created successfully"}), 201
 
@@ -62,19 +62,15 @@ def create_vendor_contact():
         logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
-@cash_flow.route('/vendor_contact/<string:vendor_contact_id>', methods=['GET'])
-def get_vendor_contacts(vendor_contact_id: str):
+@cash_flow.route('/vendor_contact', methods=['GET'])
+def get_vendor_contacts():
     """
-    Fetch a vendor contact by its ID.
+    Fetch all vendor contacts except the soft-deleted ones.
     """
     try:
-        # Fetch the vendor contact from the database
-        contact = VendorContact.query.get(vendor_contact_id)
-        if not contact:
-            return jsonify({"error": "Vendor contact not found"}), 404
-
-        return jsonify(contact.to_dict()), 200
-
+        vendor_contacts = VendorContact.query.filter(VendorContact.deleted_at.is_(None)).all()
+        vendor_contact_list = [vendor_contact.to_dict() for vendor_contact in vendor_contacts]
+        return jsonify(vendor_contact_list), 200
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
@@ -99,6 +95,22 @@ def update_vendor_contact(vendor_contact_id: str):
         is_valid, validated_data = validate_with_pydantic(VendorContactUpdateSchema, data)
         if not is_valid:
             return jsonify({"error": "Validation failed", "details": validated_data}), 400
+        
+                # Validate vendor_id
+        vendor_id = validated_data.get('vendor_id')
+        is_vendor_valid, error_message = validate_vendor_id(vendor_id)
+        if not is_vendor_valid:
+            return jsonify({"error": error_message}), 404
+
+        # Check for duplicate contact_value (email or phone)
+        contact_value = validated_data.get('contact_value')
+        is_duplicate, duplicate_message = handle_duplicate_entry_contact(
+            VendorContact,
+            field='contact_value',
+            value=contact_value
+        )
+        if is_duplicate:
+            return jsonify({"error": duplicate_message}), 400
 
         # Update vendor contact fields
         for field, value in validated_data.items():
@@ -126,6 +138,10 @@ def soft_delete_vendor_contact(vendor_contact_id: str):
         contact = VendorContact.query.get(vendor_contact_id)
         if not contact:
             return jsonify({"error": "Vendor contact not found"}), 404
+        
+        # Check if the contact has already been soft deleted
+        if contact.deleted_at is not None:
+            return jsonify({"error": "Vendor contact has already been soft deleted"}), 400
 
         # Soft delete the vendor contact
         contact.soft_delete(get_db_session())
@@ -166,7 +182,7 @@ def restore_vendor_contact(vendor_contact_id: str):
         logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
-@cash_flow.route('/vendor_contact/<string:vendor_contact_id>', methods=['DELETE'])
+@cash_flow.route('/vendor_contact/<string:vendor_contact_id>/delete', methods=['DELETE'])
 def delete_vendor_contact(vendor_contact_id: str):
     """
     Permanently delete a vendor contact by its ID.

@@ -112,6 +112,10 @@ def soft_delete_vendor(vendor_id: str):
         vendor = Vendor.active_query().filter_by(id=vendor_id).first()
         if not vendor:
             return jsonify({"error": "Vendor not found"}), 404
+        
+        # Check if the vendor has already been soft deleted
+        if vendor.deleted_at is not None:
+            return jsonify({"error": "Vendor has already been soft deleted"}), 400
 
         # Soft delete the vendor
         vendor.soft_delete(get_db_session())
