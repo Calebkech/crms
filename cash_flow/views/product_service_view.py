@@ -7,6 +7,9 @@ import uuid
 
 @cash_flow.route('/product_service', methodes=['POST'])
 def create_product_service():
+    """
+    Create product or service 
+    """
     try:
         pass
     except  Exception as e:
