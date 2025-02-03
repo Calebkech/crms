@@ -44,7 +44,7 @@ def create_product_service():
         new_product_service = ProductService(**validated_data)
         new_product_service.save(get_db_session())
 
-        return jsonify({"message": "Product/Service Created successfully"}), 201
+        return jsonify({"message": "Created successfully"}), 201
     except SQLAlchemyError as e:
         get_db_session().rollback()
         logger.error(f"Database error occured: {str(e)}")
@@ -78,7 +78,7 @@ def update_product_service(product_service_id: str):
         #fetch and validate user from database
         product_service = ProductService.query.get(product_service_id)
         if not product_service_id:
-            return jsonify({"error": "Product or service/service not found"}), 404
+            return jsonify({"error": "Product or service service not found"}), 404
         
         #Get the request data
         product_service_data = request.get_json(silent=True)
@@ -113,6 +113,33 @@ def update_product_service(product_service_id: str):
         logger.error(f'Database error occured: {str(e)}')
         return jsonify({"error": "An unexpected error occured", "details": str(e)}), 500
     
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+@cash_flow.route('/product_service/<string:product_service_id>', methods=['DELETE'])
+def soft_delete_product_service(product_service_id):
+    """
+    soft delete product or service by its id.
+    """
+    try:
+        #fetch product or service from the db
+        product_service = ProductService.query.get(product_service_id)
+        if not product_service:
+            return jsonify({"error": "prodoct or service not found"}), 404
+        
+        #check it the product or service is already soft deleted
+        if product_service.deleted_at is not None:
+            return jsonify({"erroe": "product or service has already been deleted"}), 400
+        
+        #soft delete the product or service
+        product_service.soft_delete(get_db_session())
+        return jsonify({"Message": "Product or service soft-deleted successfuly"}), 200
+    
+    except SQLAlchemyError as e:
+        get_db_session().rollback()
+        logger.error(f"Database error occurred: {str(e)}")
+        return jsonify({"error": "Database error occurred", "details": str(e)}), 500
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
