@@ -53,8 +53,8 @@ class ProductServiceCreateSchema(BaseModel):
     """
     name: str = Field(..., max_length=100, description="Name of the product/service")
     description: Optional[str] = Field(None, description="Description of the product/service")
-    price: float = Field(..., gt=0, description="Sale price of the product/service")
-    cost: float = Field(..., gt=0, description="Cost of the product/service")
+    price: float = Field(..., gt=00, description="Sale price of the product/service")
+    cost: float = Field(..., gt=00, description="Cost of the product/service")
     stock_quantity: Optional[int] = Field(None, ge=0, description="Inventory stock count")
 
 class ProductServiceUpdateSchema(BaseModel):

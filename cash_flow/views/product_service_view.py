@@ -52,3 +52,26 @@ def create_product_service():
     except  Exception as e:
         logger.error(f"An unexpected error occured: {str(e)}")
         return jsonify({"error": "An unxpected error occured", "details": str(e)}), 500
+
+
+@cash_flow.route('/get_all', methods=['GET'])
+def get_all():
+    """
+    fetch all products and services in the db
+    """
+    try:
+        products_services = ProductService.query.filter(ProductService.deleted_at.is_(None)).all()
+        products_services_list = [products_service.to_dict() for products_service in products_services]
+        return jsonify(products_services_list), 200
+    
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+
+@cash_flow.route('/product_service', methods=['PUTS'])
+def update_product_service(product_service_id):
+    try:
+        pass
+    except Exception as e:
+        pass
