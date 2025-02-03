@@ -1,6 +1,6 @@
 # utils.py
 import logging
-from typing import Dict, List, Optional, Type, Tuple
+from typing import Dict, List, Optional, Type, Tuple, Text
 from pydantic import BaseModel, EmailStr, ValidationError, Field
 from sqlalchemy.orm import Query
 from sqlalchemy.exc import SQLAlchemyError
@@ -46,6 +46,26 @@ class VendorContactUpdateSchema(BaseModel):
     contact_type: Optional[str] = Field(None, description="Contact type (e.g., 'email', 'phone')")
     contact_value: Optional[str] = Field(None, description="Contact value (e.g., 'example@domain.com', '123-456-7890')")
 
+# Schema for creating a new ProductService.
+class ProductServiceCreateSchema(BaseModel):
+    """
+    Schema for creating a new ProductService.
+    """
+    name: str = Field(..., max_length=100, description="Name of the product/service")
+    description: Optional[str] = Field(None, description="Description of the product/service")
+    price: float = Field(..., gt=0, description="Sale price of the product/service")
+    cost: float = Field(..., gt=0, description="Cost of the product/service")
+    stock_quantity: Optional[int] = Field(None, ge=0, description="Inventory stock count")
+
+class ProductServiceUpdateSchema(BaseModel):
+    """
+    Schema for updating an existing ProductService.
+    """
+    name: Optional[str] = Field(None, max_length=100, description="Name of the product/service")
+    description: Optional[str] = Field(None, description="Description of the product/service")
+    price: Optional[float] = Field(None, gt=0, description="Sale price of the product/service")
+    cost: Optional[float] = Field(None, gt=0, description="Cost of the product/service")
+    stock_quantity: Optional[int] = Field(None, ge=0, description="Inventory stock count") 
 # Utility Functions
 def validate_required_fields(data: Dict, required_fields: List[str]) -> tuple[bool, Optional[str]]:
     """
