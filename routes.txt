@@ -43,7 +43,7 @@ cashflow.soft_delete_vendor_contact    DELETE   /cash_flow/vendor_contact/<strin
 cashflow.update_account                PUT      /cash_flow/accounts/<string:account_id>                    
 cashflow.update_customer               PUT      /cash_flow/customer/<string:customer_id>                   
 cashflow.update_customer_contact       PUT      /cash_flow/cutomer_contact/<string:customer_contact_id>    
-cashflow.update_product_service        PUTS     /cash_flow/product_service                                 
+cashflow.update_product_service        PUTS     /cash_flow/product_service/<string:product_service_id>     
 cashflow.update_vendor                 PUT      /cash_flow/vendor/<string:vendor_id>                       
 cashflow.update_vendor_contact         PUT      /cash_flow/vendor_contact/<string:vendor_contact_id>       
 static                                 GET      /static/<path:filename>                                    

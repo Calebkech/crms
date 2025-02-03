@@ -96,7 +96,7 @@ def update_vendor_contact(vendor_contact_id: str):
         if not is_valid:
             return jsonify({"error": "Validation failed", "details": validated_data}), 400
         
-                # Validate vendor_id
+        # Validate vendor_id
         vendor_id = validated_data.get('vendor_id')
         is_vendor_valid, error_message = validate_vendor_id(vendor_id)
         if not is_vendor_valid:
