@@ -30,11 +30,15 @@ def create_product_service():
             return jsonify({"error": "Verification faild", "details": validated_data}), 400
         
         # check for duplicate product or service names befor saving
-        is_duplicate, duplicate_name = handle_duplicate_entry_contact(
-            ProductService, name=validated_data.get('name')
+        name_value = validated_data.get('name')
+        is_duplicate, duplicate_message = handle_duplicate_entry_contact(
+            ProductService,
+            field='name',
+            value=name_value
         )
+
         if is_duplicate:
-            return jsonify({"error": duplicate_name}), 400
+            return jsonify({"error": duplicate_message}), 400
         
         # Create and save the new vendor
         new_product_service = ProductService(**validated_data)
