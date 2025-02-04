@@ -143,3 +143,30 @@ def soft_delete_product_service(product_service_id):
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+@cash_flow.route('/product_service/<string:product_service_id>', methods=['POST'])
+def restore_product_service(product_service_id):
+    """
+    Restore a soft-deleted vendor product or services by its ID.
+    """
+    try:
+        # Fetch the soft-deleted vendor product or services
+        product_service = ProductService.query.filter(
+            ProductService.id == product_service_id,
+            ProductService.deleted_at.isnot(None)
+        ).first()
+        if not product_service:
+            return jsonify({"error": "Product or service not found or not deleted"}), 404
+
+        # Restore the vendor product or services
+        product_service.deleted_at = None
+        get_db_session().commit()
+        return jsonify({"message": "Product or service restored successfully"}), 200
+
+    except SQLAlchemyError as e:
+        get_db_session().rollback()
+        logger.error(f"Database error occurred: {str(e)}")
+        return jsonify({"error": "Database error occurred", "details": str(e)}), 500
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
