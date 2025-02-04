@@ -118,7 +118,7 @@ def update_product_service(product_service_id: str):
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 @cash_flow.route('/product_service/<string:product_service_id>', methods=['DELETE'])
-def soft_delete_product_service(product_service_id):
+def soft_delete_product_service(product_service_id: str):
     """
     soft delete product or service by its id.
     """
@@ -145,7 +145,7 @@ def soft_delete_product_service(product_service_id):
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
 @cash_flow.route('/product_service/<string:product_service_id>', methods=['POST'])
-def restore_product_service(product_service_id):
+def restore_product_service(product_service_id: str):
     """
     Restore a soft-deleted vendor product or services by its ID.
     """
@@ -162,6 +162,35 @@ def restore_product_service(product_service_id):
         product_service.deleted_at = None
         get_db_session().commit()
         return jsonify({"message": "Product or service restored successfully"}), 200
+
+    except SQLAlchemyError as e:
+        get_db_session().rollback()
+        logger.error(f"Database error occurred: {str(e)}")
+        return jsonify({"error": "Database error occurred", "details": str(e)}), 500
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
+@cash_flow.route('/product_service/<string:product_service_id>/delete', methods=['DELETE'])
+def delete_product_service(product_service_id: str):
+    """
+    Permanently delete a vendor contact by its ID.
+    """
+    try:
+        # Validate UUID format
+        try:
+            uuid.UUID(product_service_id)
+        except ValueError:
+            return jsonify({"error": "Invalid UUID"}), 400
+
+        # Fetch the product_service from the database
+        product_service = ProductService.query.get(product_service_id)
+        if not product_service:
+            return jsonify({"error": "product_service not found"}), 404
+
+        # Permanently delete the product_service
+        product_service.delete(get_db_session())
+        return jsonify({"message": "product_service deleted successfully"}), 200
 
     except SQLAlchemyError as e:
         get_db_session().rollback()
