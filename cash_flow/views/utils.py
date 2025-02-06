@@ -7,6 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from cash_flow.models import Vendor
 from datetime import date
 from cash_flow.models import Invoice
+from enum import Enum as PyEnum
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -84,6 +85,32 @@ class InvoiceUpdateSchema(BaseModel):
     customer_id: Optional[str] = Field(None, description="ID of the customer associated with the invoice")
     total_amount: Optional[float] = Field(None, gt=0, description="Total amount of the invoice")
     due_date: Optional[date] = Field(None, description="Due date for the invoice")
+
+class PaymentMethodEnum(str, PyEnum):
+    CASH = "cash"
+    BANK = "bank"
+    CREDIT = "credit"
+
+class PaymentCreateSchema(BaseModel):
+    """
+    Schema for creating a new Payment.
+    """
+    invoice_id: str = Field(..., description="ID of the invoice associated with the payment")
+    payment_date: date = Field(..., description="Date of the payment")
+    amount: float = Field(..., gt=0, description="Amount paid")
+    payment_method: PaymentMethodEnum = Field(..., description="Payment method")
+    account_id: Optional[str] = Field(None, description="ID of the account associated with the payment (optional)")
+
+class PaymentUpdateSchema(BaseModel):
+    """
+    Schema for updating an existing Payment.
+    """
+    invoice_id: Optional[str] = Field(None, description="ID of the invoice associated with the payment")
+    payment_date: Optional[date] = Field(None, description="Date of the payment")
+    amount: Optional[float] = Field(None, gt=0, description="Amount paid")
+    payment_method: Optional[PaymentMethodEnum] = Field(None, description="Payment method")
+    account_id: Optional[str] = Field(None, description="ID of the account associated with the payment (optional)")
+
 # Utility Functions
 def validate_required_fields(data: Dict, required_fields: List[str]) -> tuple[bool, Optional[str]]:
     """
