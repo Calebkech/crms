@@ -5,6 +5,8 @@ from pydantic import BaseModel, EmailStr, ValidationError, Field
 from sqlalchemy.orm import Query
 from sqlalchemy.exc import SQLAlchemyError
 from cash_flow.models import Vendor
+from datetime import date
+from cash_flow.models import Invoice
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -66,6 +68,22 @@ class ProductServiceUpdateSchema(BaseModel):
     price: Optional[float] = Field(None, gt=0, description="Sale price of the product/service")
     cost: Optional[float] = Field(None, gt=0, description="Cost of the product/service")
     stock_quantity: Optional[int] = Field(None, ge=0, description="Inventory stock count") 
+
+class InvoiceCreateSchema(BaseModel):
+    """
+    Schema for creating a new Invoice.
+    """
+    customer_id: str = Field(..., description="ID of the customer associated with the invoice")
+    total_amount: float = Field(..., gt=0, description="Total amount of the invoice")
+    due_date: date = Field(..., description="Due date for the invoice")
+
+class InvoiceUpdateSchema(BaseModel):
+    """
+    Schema for updating an existing Invoice.
+    """
+    customer_id: Optional[str] = Field(None, description="ID of the customer associated with the invoice")
+    total_amount: Optional[float] = Field(None, gt=0, description="Total amount of the invoice")
+    due_date: Optional[date] = Field(None, description="Due date for the invoice")
 # Utility Functions
 def validate_required_fields(data: Dict, required_fields: List[str]) -> tuple[bool, Optional[str]]:
     """
