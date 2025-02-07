@@ -111,6 +111,24 @@ class PaymentUpdateSchema(BaseModel):
     payment_method: Optional[PaymentMethodEnum] = Field(None, description="Payment method")
     account_id: Optional[str] = Field(None, description="ID of the account associated with the payment (optional)")
 
+class TransferCreateSchema(BaseModel):
+    """
+    Schema for creating a new Transfer.
+    """
+    from_account_id: str = Field(..., description="ID of the account transferring from")
+    to_account_id: str = Field(..., description="ID of the account transferring to")
+    amount: float = Field(..., gt=0, description="Transfer amount")
+    description: Optional[str] = Field(None, max_length=255, description="Optional transfer description")
+
+class TransferUpdateSchema(BaseModel):
+    """
+    Schema for updating an existing Transfer.
+    """
+    from_account_id: Optional[str] = Field(None, description="ID of the account transferring from")
+    to_account_id: Optional[str] = Field(None, description="ID of the account transferring to")
+    amount: Optional[float] = Field(None, gt=0, description="Transfer amount")
+    description: Optional[str] = Field(None, max_length=255, description="Optional transfer description")
+
 # Utility Functions
 def validate_required_fields(data: Dict, required_fields: List[str]) -> tuple[bool, Optional[str]]:
     """

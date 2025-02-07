@@ -19,6 +19,7 @@ cashflow.create_customer_contact       POST     /cash_flow/customer_contact
 cashflow.create_invoice                POST     /cash_flow/invoice                                           
 cashflow.create_payment                POST     /cash_flow/payment                                           
 cashflow.create_product_service        POST     /cash_flow/product_service                                   
+cashflow.create_transfer               POST     /cash_flow/transfer                                          
 cashflow.create_vendor                 POST     /cash_flow/vendor                                            
 cashflow.create_vendor_contact         POST     /cash_flow/vendor_contact                                    
 cashflow.delete_account                DELETE   /cash_flow/accounts/<string:account_id>/hard_delete          
@@ -27,6 +28,7 @@ cashflow.delete_customer_contact       DELETE   /cash_flow/customer_contact/<str
 cashflow.delete_invoice                DELETE   /cash_flow/invoice/<string:invoice_id>/delete                
 cashflow.delete_payment                DELETE   /cash_flow/payment/<string:payment_id>/delete                
 cashflow.delete_product_service        DELETE   /cash_flow/product_service/<string:product_service_id>/delete
+cashflow.delete_transfer               DELETE   /cash_flow/transfer/<string:transfer_id>/delete              
 cashflow.delete_vendor                 DELETE   /cash_flow/vendor/<string:vendor_id>/delete                  
 cashflow.delete_vendor_contact         DELETE   /cash_flow/vendor_contact/<string:vendor_contact_id>/delete  
 cashflow.get_all                       GET      /cash_flow/get_all                                           
@@ -35,6 +37,7 @@ cashflow.get_all_customers             GET      /cash_flow/view_customers
 cashflow.get_all_invoices              GET      /cash_flow/invoice                                           
 cashflow.get_customer_contacts         GET      /cash_flow/customer_contact/<string:customer_contact_id>     
 cashflow.get_payment                   GET      /cash_flow/payment                                           
+cashflow.get_transfer                  GET      /cash_flow/transfer                                          
 cashflow.get_vendor_contacts           GET      /cash_flow/vendor_contact                                    
 cashflow.get_vendors                   GET      /cash_flow/vendor                                            
 cashflow.restore_account               POST     /cash_flow/accounts/<string:account_id>/restore              
@@ -43,6 +46,7 @@ cashflow.restore_customer_contact      POST     /cash_flow/customer_contact/<str
 cashflow.restore_invoice               POST     /cash_flow/invoice/<string:invoice_id>/restore               
 cashflow.restore_payment               POST     /cash_flow/payment/<string:payment_id>/restore               
 cashflow.restore_product_service       POST     /cash_flow/product_service/<string:product_service_id>       
+cashflow.restore_transfer              POST     /cash_flow/transfer/<string:transfer_id>/restore             
 cashflow.restore_vendor                POST     /cash_flow/vendor/<string:vendor_id>                         
 cashflow.restore_vendor_contact        POST     /cash_flow/vendor_contact/<string:vendor_contact_id>         
 cashflow.soft_delete_account           DELETE   /cash_flow/accounts/<string:account_id>/soft_delete          
@@ -51,6 +55,7 @@ cashflow.soft_delete_customer_contact  DELETE   /cash_flow/customer_contact/<str
 cashflow.soft_delete_invoice           DELETE   /cash_flow/invoice/<string:invoice_id>                       
 cashflow.soft_delete_payment           DELETE   /cash_flow/payment/<string:payment_id>                       
 cashflow.soft_delete_product_service   DELETE   /cash_flow/product_service/<string:product_service_id>       
+cashflow.soft_delete_transfer          DELETE   /cash_flow/transfer/<string:transfer_id>                     
 cashflow.soft_delete_vendor            DELETE   /cash_flow/vendor/<string:vendor_id>                         
 cashflow.soft_delete_vendor_contact    DELETE   /cash_flow/vendor_contact/<string:vendor_contact_id>         
 cashflow.update_account                PUT      /cash_flow/accounts/<string:account_id>                      
@@ -59,6 +64,7 @@ cashflow.update_customer_contact       PUT      /cash_flow/cutomer_contact/<stri
 cashflow.update_invoice                PUT      /cash_flow/invoice/<string:invoice_id>                       
 cashflow.update_payment                PUT      /cash_flow/payment/<string:payment_id>                       
 cashflow.update_product_service        PUT      /cash_flow/product_service/<string:product_service_id>       
+cashflow.update_transfer               PUT      /cash_flow/transfer/<string:transfer_id>                     
 cashflow.update_vendor                 PUT      /cash_flow/vendor/<string:vendor_id>                         
 cashflow.update_vendor_contact         PUT      /cash_flow/vendor_contact/<string:vendor_contact_id>         
 static                                 GET      /static/<path:filename>                                      
